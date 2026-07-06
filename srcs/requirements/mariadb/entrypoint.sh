@@ -1,0 +1,1 @@
+#entey point script where we will install all of this 

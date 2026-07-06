@@ -1,0 +1,17 @@
+services:
+  #image:I imagine i will have the nginx image here
+  #command:
+  #ports:
+  #volumes:
+
+#Then i will have all the other servives
+#mariadb:
+  #image: mariadsomething
+  #volumes: not sure yet
+  #environment 
+    #MARIADB_ROOT_PASSWORD:
+    #MARIADB_DATABAS: 
+  #healthcheck:
+    #test: a specific command to check the health of it 
+
+#phpsomething
