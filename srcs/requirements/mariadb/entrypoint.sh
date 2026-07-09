@@ -1,1 +1,5 @@
-#entey point script where we will install all of this 
+#!/bin/bash
+
+CREATE DATABASE maria-database;
+USE maria-database;
+CREATE USER 
