@@ -16,7 +16,9 @@ LABEL version="1.0"
 LABEL description="MariaDB Server" 
 #go chedck the create tables and create user from mariadb and wordpress 
 
-COPY tools/init.sh /usr/local/bin
+COPY tools/init.sh /init.sh
+
+RUN chmod +x /init.sh
 
 ENTRYPOINT [ "/init.sh" ]
 
