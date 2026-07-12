@@ -4,15 +4,41 @@ services:
     ports:
       - "443:80" #any traffic sent to 443 will be forwarded to 80 within the container
     #not sure at all about this 
-  
+
   mariadb:
     build: requirements/mariadb
+    volumes:
+      - dbdata:/var/lib/mysql
+    restart: always
+    ports:
+      -"9000:3306"
     entrypoint: ["docker-entrypoint-mariadb.sh", "mariadb"]
     command: ["-h", "localhost", "-p", "3306"]
     environment:
-      - MARIADBPW: secret
+      - MARIADB_ROOT_PASSWORD: somewordpress
+      - MARIADB_DATABASE: wordpress
+      - MARIADB_USER: wordpress
+      - MARIADB_PASSWORD: wordpress
+
+  wordpress:
+    depends_on:
+      - mariadb
+    build: requirements/wordpress
+    volumes:
+      - wp-cpontent:/var/www/html/wp-content
+    ports:
+      -"80:9000" #not sure about this 
+    restart: always
+    environment:
+      - WORDPRESS_DB_HOST: mariadb:3306
+      - WORDPRESS_DB_USER: wordpress
+      - WORDPRESS_DB_PASSWORD: wordpress
+  
 
 
 volumes:
+  mariadb-database:
+  wp-content:
 
 networks:
+
