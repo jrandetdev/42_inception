@@ -5,31 +5,29 @@ services:
   mariadb:
     build: requirements/mariadb
     volumes:
-      - dbdata:/var/lib/mysql
+      - mariadb-database:/var/lib/mysql
     restart: always
     networks:
       - inception-network
-    entrypoint: ["docker-entrypoint-mariadb.sh", "mariadb"]
-    command: ["-h", "localhost", "-p", "3306"]
     environment:
-      - MARIADB_ROOT_PASSWORD: somewordpress
-      - MARIADB_DATABASE: wordpress
-      - MARIADB_USER: wordpress
-      - MARIADB_PASSWORD: wordpress
+      - MARIADB_ROOT_PASSWORD=somewordpress
+      - MARIADB_DATABASE=wordpress
+      - MARIADB_USER=wordpress
+      - MARIADB_PASSWORD=wordpress
 
   wordpress:
     depends_on:
       - mariadb
     build: requirements/wordpress
     volumes:
-      - wp-cpontent:/var/www/html
+      - wp-content:/var/www/html
     restart: always
     networks:
       - inception-network
     environment:
-      - WORDPRESS_DB_HOST: mariadb:3306
-      - WORDPRESS_DB_USER: wordpress
-      - WORDPRESS_DB_PASSWORD: wordpress
+      - WORDPRESS_DB_HOST=mariadb:3306
+      - WORDPRESS_DB_USER=wordpress
+      - WORDPRESS_DB_PASSWORD=wordpress
   
   nginx:
     depends_on:
@@ -39,6 +37,8 @@ services:
     ports:
       - "443:443" #any traffic sent to 443 will be forwarded to 80 within the container
     restart: always
+    networks:
+      - inception-network
     #not sure at all about this 
 
 
@@ -50,5 +50,5 @@ volumes:
 
 networks:
   inception-network:
-  driver: bridge
+    driver: bridge
 
