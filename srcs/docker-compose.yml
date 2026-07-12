@@ -1,7 +1,6 @@
 # a service = a unit of work in docker compose. It will tell
 #docker compose what images to build.
 services:
-
   mariadb:
     build: requirements/mariadb
     volumes:
@@ -44,7 +43,15 @@ services:
 
 volumes:
   mariadb-database:
+    driver: local
+    driver_opts:
+      o: bind
+      device: /home/${HOSTUSERLOGIN}/data
   wp-content:
+      driver: local
+      driver_opts:
+      o: bind
+      device: /home/${HOSTUSERLOGIN}/data
 
 #a network is a way for containers to communicate with eachother
 
