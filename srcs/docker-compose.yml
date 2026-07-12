@@ -1,17 +1,14 @@
+# a service = a unit of work in docker compose. It will tell
+#docker compose what images to build.
 services:
-  nginx:
-    build: requirements/nginx
-    ports:
-      - "443:80" #any traffic sent to 443 will be forwarded to 80 within the container
-    #not sure at all about this 
 
   mariadb:
     build: requirements/mariadb
     volumes:
       - dbdata:/var/lib/mysql
     restart: always
-    ports:
-      -"9000:3306"
+    networks:
+      - inception-network
     entrypoint: ["docker-entrypoint-mariadb.sh", "mariadb"]
     command: ["-h", "localhost", "-p", "3306"]
     environment:
@@ -25,20 +22,33 @@ services:
       - mariadb
     build: requirements/wordpress
     volumes:
-      - wp-cpontent:/var/www/html/wp-content
-    ports:
-      -"80:9000" #not sure about this 
+      - wp-cpontent:/var/www/html
     restart: always
+    networks:
+      - inception-network
     environment:
       - WORDPRESS_DB_HOST: mariadb:3306
       - WORDPRESS_DB_USER: wordpress
       - WORDPRESS_DB_PASSWORD: wordpress
   
+  nginx:
+    depends_on:
+      - wordpress
+    hostname: nginx
+    build: requirements/nginx
+    ports:
+      - "443:443" #any traffic sent to 443 will be forwarded to 80 within the container
+    restart: always
+    #not sure at all about this 
 
 
 volumes:
   mariadb-database:
   wp-content:
 
+#a network is a way for containers to communicate with eachother
+
 networks:
+  inception-network:
+  driver: bridge
 
