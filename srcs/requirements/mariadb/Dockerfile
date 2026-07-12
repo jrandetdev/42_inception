@@ -3,7 +3,8 @@ FROM debian:bookworm
 
 #apt-get installs packages,m and a single call to apt gtet updater causes casshing issues
 RUN apt-get update && apt-get install -y mariadb-server
-VOLUME /var/lib/mysql
+VOLUME /var/lib/mysql 
+#the volume here is like the port it is just exposed, it needs to be added to the compose file
 #each instrucvtion is cashed for the next time it runs. if one layer is invalidated, all thew nbext laye
 
 #mariadb default port toi which other services can conbnect 
