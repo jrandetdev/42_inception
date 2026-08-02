@@ -12,17 +12,21 @@ FROM debian:bookworm
 # subj fills it in for us
 RUN apt-get update && apt-get install nginx openssl -y && rm -rf /var/lib/apt/lists/*
 
-EXPOSE 443
+EXPOSE ${NGINX_PORT}
 
 LABEL version="1.0"
 LABEL description="Nginx Server"
 
-COPY ./conf/nginx.conf /etc/nginx/nginx.conf
+# we keep the base of the default image, and then it includes our default.conf in http {}
+#this does not break the original nginx conf
+#before that we were writing over the entire config and had to manually write everything
+# this avoids it and leaves part of the responsibility to nginx
+COPY ./conf/default.conf /etc/nginx/conf.d/default.conf
 
-COPY "./tools/ssl_config.sh" /etc/nginx/ssl_config.sh
+COPY "./tools/ssl_config.sh" /usr/local/bin
 
-RUN chmod +x /etc/nginx/ssl_config.sh
+RUN chmod +x /usr/local/bin/ssl_config.sh
 
-ENTRYPOINT [ "/etc/nginx/ssl_config.sh" ]
+ENTRYPOINT [ "ssl_config.sh" ]
 
 CMD ["nginx", "-g", "daemon off;"]
