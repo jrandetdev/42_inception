@@ -10,7 +10,7 @@ FROM debian:bookworm
 # sha256 is the hashing algorithm for the certificate signature
 # nodes removes the encryption of the private key meaning we are not prompted for password
 # subj fills it in for us
-RUN apt-get update && apt-get install nginx openssl -y
+RUN apt-get update && apt-get install nginx openssl -y && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 443
 

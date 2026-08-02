@@ -45,13 +45,11 @@ volumes:
   mariadb-database:
     driver: local
     driver_opts:
-      o: bind
       device: /home/${HOSTUSERLOGIN}/data
   wp-content:
       driver: local
       driver_opts:
-      o: bind
-      device: /home/${HOSTUSERLOGIN}/data
+        device: /home/${HOSTUSERLOGIN}/data
 
 #a network is a way for containers to communicate with eachother
 
