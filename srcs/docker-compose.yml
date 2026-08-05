@@ -1,11 +1,12 @@
 # a service = a unit of work in docker compose. It will tell
 #docker compose what images to build.
+name: inception
 services:
   mariadb:
     build: requirements/mariadb
     volumes:
-      - mariadb-database:/var/lib/mysql
-    restart: always
+      - mariadb_data:/var/lib/mysql
+    restart: on-failure
     networks:
       - inception-network
     environment:
@@ -22,8 +23,8 @@ services:
       - mariadb
     build: requirements/wordpress
     volumes:
-      - wp-content:/var/www/html
-    restart: always
+      - wordpress_data:/var/www/html
+    restart: on-failure
     networks:
       - inception-network
     environment:
@@ -50,27 +51,29 @@ services:
     hostname: nginx
     build: requirements/nginx
     volumes:
-      - wp-content:/var/www/html
+      - wordpress_data:/var/www/html
+    environment:
+      - DOMAIN_NAME=${DOMAIN_NAME}
     ports:
       - "${NGINX_PORT}:${NGINX_PORT}" #any traffic sent to 443 will be forwarded to 80 within the container
-    restart: always
+    restart: on-failure
     networks:
       - inception-network
 
 
 volumes:
-  mariadb-database:
+  mariadb_data:
     driver: local
     driver_opts:
       type: none
       o: bind
       device: ${DATA_PATH}/mariadb
-  wp-content:
-      driver: local
-      driver_opts:
-        type: none
-        o: bind
-        device: ${DATA_PATH}/wordpress
+  wordpress_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DATA_PATH}/wordpress
 
 #a network is a way for containers to communicate with eachother
 

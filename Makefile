@@ -4,9 +4,11 @@ SRCS_DIR		= srcs
 COMPOSE_FILE	= $(SRCS_DIR)/docker-compose.yml
 ENV_FILE		= $(SRCS_DIR)/.env
 
-COMPOSE			= docker compose -f $(COMPOSE_FILE) --env-file $(ENV_FILE)
+include $(ENV_FILE)
 
-DATA_PATH		= $(HOME)/data
+DOMAIN			= $(DOMAIN_NAME)
+
+COMPOSE			= docker compose -f $(COMPOSE_FILE) --env-file $(ENV_FILE)
 
 SECRETS_DIR		= secrets
 SECRETS			= $(SECRETS_DIR)/mariadb_root_password.txt \
@@ -16,7 +18,7 @@ SECRETS			= $(SECRETS_DIR)/mariadb_root_password.txt \
 
 all: up
 
-up: data secrets
+up: hosts secrets data
 	$(COMPOSE) up -d --build
 
 build:
@@ -48,6 +50,12 @@ secrets: $(SECRETS)
 $(SECRETS_DIR)/%.txt:
 	mkdir -p $(SECRETS_DIR)
 	openssl rand -base64 24 > $@
+
+hosts:
+	@if ! grep -q "$(DOMAIN)" /etc/hosts; then \
+		echo "127.0.0.1 $(DOMAIN)" | sudo tee -a /etc/hosts > /dev/null; \
+		echo "Added $(DOMAIN) to /etc/hosts"; \
+	fi
 
 clean: down
 	$(COMPOSE) down --rmi all --volumes --remove-orphans
