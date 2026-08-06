@@ -8,9 +8,11 @@ WP_DB_PASSWORD="$(cat "$WP_DB_PASSWORD_FILE")"
 WP_ADMIN_PASSWORD="$(cat "$WP_ADMIN_PASSWORD_FILE")"
 WP_USER_PASSWORD="$(cat "$WP_USER_PASSWORD_FILE")"
 
-if ! [ -f "$CONFIG_FILE_PHP" ]; then
+if ! [ -f "/var/www/html/wp-load.php" ]; then
     wp core download --allow-root
+fi
 
+if ! [ -f "$CONFIG_FILE_PHP" ]; then
     wp config create \
         --dbname="$WP_DB_NAME" \
         --dbuser="$WP_DB_USER" \

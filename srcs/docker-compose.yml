@@ -18,10 +18,17 @@ services:
     secrets:
       - mariadb_root_password
       - mariadb_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-u", "mysql"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
 
   wordpress:
     depends_on:
-      - mariadb
+      mariadb:
+        condition: service_healthy
     build: requirements/wordpress
     volumes:
       - wordpress_data:/var/www/html
