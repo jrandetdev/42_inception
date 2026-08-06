@@ -61,7 +61,7 @@ clean: down
 	$(COMPOSE) down --rmi all --volumes --remove-orphans
 
 fclean: clean
-	rm -rf $(DATA_PATH)
+	sudo rm -rf $(DATA_PATH)
 
 re: fclean all
 

@@ -9,8 +9,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	&& mkdir -p /var/www/html/myawesomewebsite.com \
 	&& rm -rf /var/lib/apt/lists/*
 
-RUN sed -i "s|^listen = .*|listen = 9000|" /etc/php/8.2/fpm/pool.d/www.conf
-
 WORKDIR /var/www/html
 
 VOLUME /var/www/html
@@ -18,7 +16,7 @@ VOLUME /var/www/html
 COPY /tools/wordpress-entrypoint.sh /usr/local/bin
 RUN chmod +x /usr/local/bin/wordpress-entrypoint.sh
 
-EXPOSE ${WP_PORT}
+EXPOSE 9000
 
 ENTRYPOINT ["wordpress-entrypoint.sh"]
 

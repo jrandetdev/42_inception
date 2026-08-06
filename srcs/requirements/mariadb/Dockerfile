@@ -12,7 +12,7 @@ VOLUME /var/lib/mysql
 
 COPY conf/50-server.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
 COPY /tools/mariadb-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/mariadb-entrypoint.sh
+RUN chmod 755 /usr/local/bin/mariadb-entrypoint.sh
 
 USER mysql
 

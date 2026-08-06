@@ -10,9 +10,9 @@ FROM debian:bookworm
 # sha256 is the hashing algorithm for the certificate signature
 # nodes removes the encryption of the private key meaning we are not prompted for password
 # subj fills it in for us
-RUN apt-get update && apt-get install nginx openssl -y && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install nginx openssl gettext-base -y && rm -rf /var/lib/apt/lists/*
 
-EXPOSE ${NGINX_PORT}
+EXPOSE 443
 
 LABEL version="1.0"
 LABEL description="Nginx Server"
@@ -21,7 +21,7 @@ LABEL description="Nginx Server"
 #this does not break the original nginx conf
 #before that we were writing over the entire config and had to manually write everything
 # this avoids it and leaves part of the responsibility to nginx
-COPY ./conf/default.conf /etc/nginx/conf.d/default.conf
+COPY ./conf/default.conf.template /etc/nginx/conf.d/default.conf.template
 
 COPY "./tools/ssl_config.sh" /usr/local/bin
 

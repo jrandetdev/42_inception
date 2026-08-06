@@ -30,4 +30,4 @@ EOF
 fi
 echo "MariaDB ready!"
 
-exec mariadbd
+exec mariadbd --port="${MARIADB_PORT}"

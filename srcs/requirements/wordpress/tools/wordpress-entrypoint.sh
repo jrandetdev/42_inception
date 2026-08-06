@@ -2,6 +2,8 @@
 
 set -e
 
+sed -i "s|^listen = .*|listen = ${WP_PORT}|" /etc/php/8.2/fpm/pool.d/www.conf
+
 WP_DB_PASSWORD="$(cat "$WP_DB_PASSWORD_FILE")"
 WP_ADMIN_PASSWORD="$(cat "$WP_ADMIN_PASSWORD_FILE")"
 WP_USER_PASSWORD="$(cat "$WP_USER_PASSWORD_FILE")"
