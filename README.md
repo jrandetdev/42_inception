@@ -1,25 +1,62 @@
-# 42_inception
+*This project has been created as part of the 42 curriculum by jrandet*
 
-##OpenSSL
+# 42 Inception
 
-In the nginx Dockerfile, we run an openssl commdand to generate keys. OpenSSL stands for Open Secure Socket Layer, a cryptographic communications protocol. This is to ensure HTTPS communication over a specific network. This means if a third party connects to the network, it should not be able to understand or listen to anything that parties using the network are exchanging. 
+## Description
 
-They need a symetric key to do so, a bit like with ssh. We use assymetric encryptoon. One networ user (alice) will generatea pair of kjeys on her end:
-- a private key she keeps to herself
-- a public key that is available to anyone who wants it.
-If someone encrypts something with her private key, she can decript it with her private key. She can sign data with her private key, and her public key will be able to verify it. Bob (second user) has a similar set of keys.
+This project sets up a small web infrastructure using Docker Compose. It runs three services, each in its own container, built from a custom Dockerfile:
 
-If Alice wants to send a message to BOb, she can encrypt the message using bob's public key, which can be decripted with his private key. If alice wants to authenticate herself to bob, she can generate a signature by signing the message with her private key. 
+- NGINX, with a self signed TLS certificate, as the only entry point to the site (port 443 only for secure Https connection)
+- WordPress, running with php-fpm, connected to NGINX over the network
+- MariaDB, used as the database for WordPress
 
-CERTIFICATES
+Each service keeps its data in a Docker volume that is stored on the host machine, so nothing is lost when the containers are stopped or the machine is restarted. All three containers talk to each other through a dedicated Docker network called inception network. They all contain an entry point file which is a shell script executed upon the dedicated service's startup.
 
-Alice can make a CSR (certificate signing request) with her public key, information that indentifies her, and sign it with her private key. These are then signed by a trusted Certificate Authority which has a private key of its own. Most browsers have a CA and users can use its self signed certificate to verify bob's certificate against the CA's certificate. 
+## Instructions
 
+To build and start the project, run:
 
-In our case: the user (alice) is our host web browser, for example chrome hitting http://localhost. The webserver (bob) is NginX. We will hook up our nginx with an inception.key and an inception.crt, meaning we act a bit like Bob. Nginx will use our private key to decrypt incoming requests under the hood.
+    make up
 
-So in essence, we are acting as the Certificate uthority. OpenSSL will sign everything before nginx is started.
+This will:
+- generate the password files needed by the containers (secrets)
+- create the data folder on the host 
+- add the project domain to /etc/hosts
+- build the three Docker images (mariadb, wordpress, nginx) and start the containers
 
-When we launch the docker compose build nginx, the Dockerfile executes the openssl -req -x509 ... command and creates two files: inception.key (private key) (secret mathematical RSA code) and inception.crt which is the public certificate containing all my info. -x509 is the self signed part. When a browser connects, our nginx will send the certificate to the browser, the browser will see it was self signed, and it will say "you are not private" because we dont use an official CA like Let's Encrypt from google.
+Once it is running, open https://jrandet.42.fr (don't forget the s) in a browser. The certificate is self signed, so the browser will show a warning. This is expected, you can continue past it by clicking 'authorize'.
 
-https://www.cs.toronto.edu/~arnold/427/19s/427_19S/tool/ssl/notes.pdf
+For more detailed usage instructions, see USER_DOC.md.
+For setup and development details, see DEV_DOC.md.
+
+## Resources
+
+Documentation and tools used while building this project:
+
+- the official 42 Inception subject
+- I completed the getting started from docker to familiarise myself (highly recommend). https://docs.docker.com/get-started/introduction/
+- Docker file, compose, volumes and network documentation to understand how all these work
+	Docker file:
+	- https://docs.docker.com/reference/dockerfile/ 
+	Docker compose:
+	- https://docs.docker.com/reference/compose-file/services/
+	- https://docs.docker.com/engine/network/
+	- https://docs.docker.com/reference/compose-file/volumes/ 
+- WordPress CLI (wp-cli) documentation 
+	- https://www.hostinger.com/tutorials/how-to-install-wordpress-with-nginx-on-ubuntu/?utm_source=google&utm_medium=cpc&utm_id=20586398874&utm_campaign=Generic-Tutorials-DSA-t1%7CNT:Se%7CLang:EN%7CLO:FR&utm_term=&utm_content=750690802532&gad_source=1&gad_campaignid=20586398874&gbraid=0AAAAADMy-hYQ8fFowclwheH3MdtEMQERl&gclid=CjwKCAjw1bvTBhBbEiwAzbP8L-MKCIQgmwn5pn_LtEMnQcX3gNsaa_Oz2i9yfvJjI5SX7xYPfcA1ZBoCM2YQAvD_BwE
+	- https://make.wordpress.org/cli/handbook/guides/installing/
+	- https://wordpress.org/cli/
+- MariaDB documentation 
+	- https://mariadb.com/docs/server/mariadb-quickstart-guides/installing-mariadb-server-guide
+	- https://developer.wordpress.org/advanced-administration/before-install/creating-database/
+	- https://github.com/MariaDB/mariadb-docker
+	- https://mariadb.com/docs/server/security/encryption/data-in-transit-encryption/certificate-creation-with-openssl
+- NGINX documentation
+- OpenSSL documentation, for understanding certificates and the TLS handshake
+	- https://stackoverflow.com/questions/10175812/how-can-i-generate-a-self-signed-ssl-certificate-using-openssl
+	- https://docs.openssl.org/3.2/man7/ossl-guide-introduction/#providers
+	- https://www.cs.toronto.edu/~arnold/427/19s/427_19S/tool/ssl/notes.pdf 
+
+AI assistance:
+
+Claude (an AI assistant by Anthropic) was used during this project to help debug Docker Compose configuration issues, explain SSL/TLS concepts, and write this documentation. I wrote all the dockerfiles, compose, and scripts by hand and use ai more as a way to deepen my understanding. I also used it for simple tasks like checking that my domain name was coherent everywhere.
